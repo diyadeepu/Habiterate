@@ -30,17 +30,34 @@
 </head>
 <body class="bg-cream text-navy font-sans antialiased min-h-screen">
 
+    <!-- LOADING PAGE -->
+    <div id="loading-page" class="fixed inset-0 bg-cream z-[100] flex flex-col items-center justify-center transition-opacity duration-500">
+        <div class="text-center">
+            <h2 class="text-2xl font-serif text-navy mb-8 tracking-wider">Hover to Commit</h2>
+
+            <!-- The Hover Circle -->
+            <div id="commit-circle" class="relative w-32 h-32 rounded-full border-4 border-mustard mx-auto overflow-hidden cursor-pointer flex items-center justify-center group">
+                <!-- The Navy Fill (Animates from bottom up over 2 seconds) -->
+                <div class="absolute bottom-0 left-0 right-0 h-0 bg-navy transition-all duration-[2000ms] ease-linear group-hover:h-full"></div>
+                <!-- The Text (Changes color as the Navy background covers it) -->
+                <span class="relative z-10 text-mustard font-bold transition-colors duration-[2000ms] group-hover:text-cream">Intend</span>
+            </div>
+
+            <p class="text-slate mt-6 text-sm opacity-70">Focus for 2 seconds to unlock.</p>
+        </div>
+    </div>
+
     <!-- Navigation Bar -->
     <nav class="bg-navy text-cream p-4 flex justify-between items-center shadow-md sticky top-0 z-50">
         <div class="font-bold text-xl tracking-wider">Habiterate</div>
         <div class="flex space-x-6 font-semibold">
-            <button onclick="switchTab('main')" id="nav-main" class="text-mustard hover:text-cream transition-colors border-b-2 border-mustard">Dashboard</button>
+            <button onclick="switchTab('main')" id="nav-main" class="text-mustard hover:text-cream transition-colors border-b-2 border-mustard">Home</button>
             <button onclick="switchTab('motivation')" id="nav-motivation" class="hover:text-mustard transition-colors border-b-2 border-transparent">Motivation</button>
         </div>
     </nav>
 
-    <!-- MAIN PAGE: Dashboard -->
-    <main id="main-page" class="max-w-3xl mx-auto p-6 block">
+    <!-- MAIN PAGE: Dashboard (Now hidden by default) -->
+    <main id="main-page" class="max-w-3xl mx-auto p-6 hidden">
         <h1 class="text-3xl font-bold mb-2">Today's Focus</h1>
         <p class="text-slate mb-8">Log partial wins. Keep your momentum going.</p>
 

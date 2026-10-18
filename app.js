@@ -17,6 +17,38 @@ function saveState() {
     renderDashboard();
 }
 
+// --- Loading Screen Logic (Hover to Commit) ---
+let hoverTimer;
+
+function initLoadingScreen() {
+    const circle = document.getElementById('commit-circle');
+
+    // When the mouse enters the circle, start the 2-second clock
+    circle.addEventListener('mouseenter', () => {
+        hoverTimer = setTimeout(() => {
+            unlockApp();
+        }, 2000); // 2000ms = 2 seconds
+    });
+
+    // If the mouse leaves before 2 seconds, cancel the timer
+    circle.addEventListener('mouseleave', () => {
+        clearTimeout(hoverTimer);
+    });
+}
+
+function unlockApp() {
+    const loadingPage = document.getElementById('loading-page');
+
+    // Fade out the loading screen
+    loadingPage.style.opacity = '0';
+
+    // Wait for the fade animation to finish, then remove it and show the dashboard
+    setTimeout(() => {
+        loadingPage.style.display = 'none';
+        switchTab('main');
+    }, 500);
+}
+
 // --- Navigation Logic ---
 function switchTab(tabId) {
     document.getElementById('main-page').classList.replace('block', 'hidden');
@@ -36,7 +68,7 @@ function switchTab(tabId) {
     }
 }
 
-// --- Habit Logic ---
+// --- The "Rule of Three" & Habit Logic ---
 function addHabit() {
     const input = document.getElementById('new-habit-input');
     const warning = document.getElementById('rule-of-three-warning');
@@ -44,9 +76,10 @@ function addHabit() {
 
     if (!title) return;
 
+    // THE RULE OF THREE: Prevent adding more than 3 habits
     if (appState.habits.length >= 3) {
         warning.classList.remove('hidden');
-        setTimeout(() => warning.classList.add('hidden'), 3000);
+        setTimeout(() => warning.classList.add('hidden'), 4000);
         return;
     }
 
@@ -67,7 +100,7 @@ function logHabit(habitId, score) {
     if (!habit) return;
 
     const today = new Date().toISOString().split('T')[0];
-    habit.history[today] = score;
+    habit.history[today] = score; // Logs 0, 0.5, or 1
     saveState();
 }
 
@@ -76,18 +109,18 @@ function deleteHabit(habitId) {
     saveState();
 }
 
-// --- Rolling Average Calculation ---
+// --- Rolling Average Consistency Math ---
 function calculateConsistency(habit) {
     const today = new Date();
     const createdDate = new Date(habit.createdAt);
 
-    // Days since creation (max 30)
+    // Calculate days since creation (capped at 30 days maximum)
     let daysActive = Math.floor((today - createdDate) / (1000 * 60 * 60 * 24)) + 1;
     if (daysActive > 30) daysActive = 30;
 
     let totalPoints = 0;
 
-    // Look back over the active days
+    // Look back over the active days and tally points
     for (let i = 0; i < daysActive; i++) {
         let d = new Date();
         d.setDate(today.getDate() - i);
@@ -101,7 +134,7 @@ function calculateConsistency(habit) {
     return Math.round((totalPoints / daysActive) * 100);
 }
 
-// --- UI Rendering ---
+// --- Render the Habit Cards to the HTML ---
 function renderDashboard() {
     const container = document.getElementById('habits-container');
     container.innerHTML = '';
@@ -115,16 +148,16 @@ function renderDashboard() {
         habitCard.className = 'bg-white p-6 rounded-xl shadow-sm border-l-8 border-navy flex flex-col md:flex-row justify-between items-center gap-4';
 
         habitCard.innerHTML = `
-            <div class="flex-1">
+            <div class="flex-1 w-full">
                 <div class="flex justify-between items-start">
                     <h3 class="text-2xl font-bold text-navy mb-1">${habit.title}</h3>
-                    <button onclick="deleteHabit(${habit.id})" class="text-gray-400 hover:text-red-500 transition-colors">
+                    <button onclick="deleteHabit(${habit.id})" class="text-slate hover:text-red-500 transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                     </button>
                 </div>
                 <p class="text-slate text-sm mb-3">30-Day Rolling Consistency: <span class="font-bold text-mustard">${consistency}%</span></p>
                 <div class="w-full bg-cream rounded-full h-2.5 mb-2">
-                    <div class="bg-mustard h-2.5 rounded-full" style="width: ${consistency}%"></div>
+                    <div class="bg-mustard h-2.5 rounded-full transition-all duration-500" style="width: ${consistency}%"></div>
                 </div>
             </div>
             
@@ -174,4 +207,7 @@ function generateQuote() {
 }
 
 // Initialize the app when the file loads
-window.onload = loadState;
+window.onload = () => {
+    loadState();           // Loads user habits and the 3 main habits array
+    initLoadingScreen();   // Activates the hover logic
+};
