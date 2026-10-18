@@ -3,433 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Habiterate | Agile Habit Tracker</title>
+    <title>Habiterate | Guilt-Free Tracking</title>
 
-    <!-- Load Tailwind CSS -->
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Configure Tailwind with custom color palette -->
+    <!-- Tailwind Color Configuration -->
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        cream: '#eeeae2',
                         navy: '#2e3d58',
+                        cream: '#eeeae2',
                         olive: '#8d8c72',
                         slate: '#67746e',
-                        mustard: '#ba955c'
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
+                        mustard: '#ba955c',
                     }
                 }
             }
         }
     </script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
-    <style>
-        body {
-            background-color: #eeeae2; /* Cream background */
-            color: #2e3d58; /* Navy text */
-            font-family: 'Inter', sans-serif;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        /* Custom scrollbar for a cleaner look */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #8d8c72;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #67746e;
-        }
-
-        /* Smooth transitions for interactive elements */
-        .btn-transition {
-            transition: all 0.2s ease-in-out;
-        }
-
-        /* Message Box Animation */
-        #message-box {
-            transition: opacity 0.3s ease, transform 0.3s ease;
-            transform: translateY(-20px);
-            opacity: 0;
-            pointer-events: none;
-        }
-        #message-box.show {
-            transform: translateY(0);
-            opacity: 1;
-            pointer-events: auto;
-        }
-    </style>
+    <!-- Link to your external JavaScript file -->
+    <script src="app.js" defer></script>
 </head>
-<body class="min-h-screen flex flex-col items-center p-4 sm:p-8">
+<body class="bg-cream text-navy font-sans antialiased min-h-screen">
 
-    <!-- Toast Message Box (No alerts allowed) -->
-    <div id="message-box" class="fixed top-5 left-1/2 transform -translate-x-1/2 z-50 bg-mustard text-white px-6 py-3 rounded-full shadow-lg font-semibold flex items-center space-x-2">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-        <span id="message-text">Message goes here</span>
-    </div>
+    <!-- Navigation Bar -->
+    <nav class="bg-navy text-cream p-4 flex justify-between items-center shadow-md sticky top-0 z-50">
+        <div class="font-bold text-xl tracking-wider">Habiterate</div>
+        <div class="flex space-x-6 font-semibold">
+            <button onclick="switchTab('main')" id="nav-main" class="text-mustard hover:text-cream transition-colors border-b-2 border-mustard">Dashboard</button>
+            <button onclick="switchTab('motivation')" id="nav-motivation" class="hover:text-mustard transition-colors border-b-2 border-transparent">Motivation</button>
+        </div>
+    </nav>
 
-    <!-- Main Container -->
-    <div class="w-full max-w-2xl bg-white bg-opacity-60 backdrop-blur-md rounded-3xl shadow-xl overflow-hidden border border-cream/50">
+    <!-- MAIN PAGE: Dashboard -->
+    <main id="main-page" class="max-w-3xl mx-auto p-6 block">
+        <h1 class="text-3xl font-bold mb-2">Today's Focus</h1>
+        <p class="text-slate mb-8">Log partial wins. Keep your momentum going.</p>
 
-        <!-- Header -->
-        <header class="bg-navy text-cream p-8 text-center relative overflow-hidden">
-            <div class="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
-            <h1 class="text-4xl font-bold tracking-tight relative z-10">Habiterate</h1>
-            <p class="text-cream/80 mt-2 font-light relative z-10">Guilt-free, agile habit tracking.</p>
-        </header>
-
-        <div class="p-6 sm:p-10 space-y-8">
-
-            <!-- Morning Intent Section -->
-            <section class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                <h2 class="text-xl font-semibold mb-2 flex items-center text-navy">
-                    <svg class="w-5 h-5 mr-2 text-mustard" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                    Morning Intent
-                </h2>
-                <p class="text-sm text-slate mb-4">What is your single primary focus for today?</p>
-                <div class="flex flex-col sm:flex-row gap-3">
-                    <input type="text" id="intent-input" placeholder="e.g., Draft the PM case study..."
-                           class="flex-1 bg-cream/50 border border-gray-200 text-navy rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-mustard transition-shadow">
-                    <button onclick="saveIntent()" class="bg-mustard hover:bg-[#a3804d] text-white font-semibold py-3 px-6 rounded-xl btn-transition shadow-md shadow-mustard/30">
-                        Set Focus
-                    </button>
-                </div>
-                <div id="active-intent-display" class="hidden mt-4 p-4 bg-cream text-navy rounded-xl border border-mustard/30 flex items-center justify-between">
-                    <div>
-                        <span class="text-xs font-bold uppercase tracking-wider text-mustard block mb-1">Today's Focus</span>
-                        <span id="intent-text" class="font-medium text-lg"></span>
-                    </div>
-                    <button onclick="clearIntent()" class="text-slate hover:text-navy btn-transition p-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                    </button>
-                </div>
-            </section>
-
-            <!-- Rolling Average Dashboard -->
-            <section class="bg-navy rounded-2xl p-6 shadow-md text-white">
-                <h2 class="text-xl font-semibold mb-4 flex items-center text-cream">
-                    <svg class="w-5 h-5 mr-2 text-olive" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
-                    30-Day Rolling Consistency
-                </h2>
-                <div class="flex items-end justify-between mb-2">
-                    <span class="text-3xl font-bold text-mustard" id="average-score">0%</span>
-                    <span class="text-sm text-cream/70 pb-1">No streaks, just progress.</span>
-                </div>
-                <div class="w-full bg-slate/50 rounded-full h-3">
-                    <div id="average-progress-bar" class="bg-mustard h-3 rounded-full transition-all duration-1000 ease-out" style="width: 0%"></div>
-                </div>
-            </section>
-
-            <!-- Habits Section (Rule of Three) -->
-            <section>
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-2xl font-bold text-navy flex items-center">
-                        Active Habits
-                        <span id="habit-count-badge" class="ml-3 bg-olive text-white text-xs font-bold px-2 py-1 rounded-full">0 / 3</span>
-                    </h2>
-                </div>
-
-                <!-- Add Habit Form -->
-                <div class="flex gap-3 mb-6">
-                    <input type="text" id="habit-input" placeholder="Add a new habit..."
-                           class="flex-1 bg-white border border-gray-200 text-navy rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-olive transition-shadow shadow-sm">
-                    <button onclick="addHabit()" class="bg-navy hover:bg-slate text-white font-semibold py-3 px-6 rounded-xl btn-transition shadow-md shadow-navy/30">
-                        Add
-                    </button>
-                </div>
-
-                <!-- Habits List Container -->
-                <div id="habits-container" class="space-y-4">
-                    <!-- Habit Cards will be injected here by JS -->
-                </div>
-
-                <!-- Empty State -->
-                <div id="empty-state" class="text-center py-10 hidden">
-                    <svg class="w-16 h-16 mx-auto text-slate opacity-50 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                    <p class="text-slate font-medium">No habits configured.</p>
-                    <p class="text-sm text-slate/80 mt-1">Add up to 3 habits to start iterating.</p>
-                </div>
-            </section>
+        <!-- Add Habit Form -->
+        <div class="bg-white p-6 rounded-xl shadow-sm mb-8 border border-gray-200">
+            <h2 class="text-xl font-bold text-navy mb-4">Start a New Iteration</h2>
+            <div class="flex gap-4">
+                <input type="text" id="new-habit-input" placeholder="e.g., Read 10 pages" class="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-mustard">
+                <button onclick="addHabit()" class="bg-navy hover:bg-slate text-cream px-6 py-3 rounded-lg font-bold transition-colors">Add Habit</button>
+            </div>
+            <p id="rule-of-three-warning" class="text-mustard text-sm font-bold mt-2 hidden">Rule of Three Active: Please archive a habit before adding a new one.</p>
         </div>
 
-        <!-- Footer -->
-        <footer class="bg-cream/50 text-center py-6 text-sm text-slate border-t border-gray-200">
-            <p><strong>Habiterate</strong> &copy; <script>document.write(new Date().getFullYear())</script></p>
-            <p class="text-xs mt-1">Data saved securely in your browser.</p>
-        </footer>
-    </div>
+        <!-- Habits List Container -->
+        <div id="habits-container" class="space-y-6">
+            <!-- JavaScript will render the habit cards here -->
+        </div>
+    </main>
 
-    <!-- Application Logic -->
-    <script>
-        // --- State Management ---
-        const STORAGE_KEY = 'habiterate_data_v1';
+    <!-- MOTIVATION PAGE -->
+    <main id="motivation-page" class="hidden max-w-2xl mx-auto p-6 flex-col items-center justify-center min-h-[70vh] text-center">
+        <div class="bg-white p-10 rounded-2xl shadow-lg border-l-8 border-mustard w-full mt-10">
+            <p id="quote-text" class="text-3xl text-navy italic mb-6 font-serif leading-snug">
+                "Success is the sum of small efforts, repeated day in and day out."
+            </p>
+            <p id="quote-author" class="text-xl text-slate font-semibold tracking-wide">
+                - Robert Collier
+            </p>
+            <button onclick="generateQuote()" class="mt-10 bg-olive hover:bg-slate text-cream py-4 px-8 rounded-xl font-bold text-lg transition-transform transform hover:scale-105 shadow-md">
+                Draw Another Spark
+            </button>
+        </div>
+    </main>
 
-        // Default state structure
-        let appState = {
-            intent: { date: '', text: '' },
-            habits: [] // Array of { id, title, createdAt, history: { 'YYYY-MM-DD': score } }
-        };
-
-        // Utility: Get today's date string (YYYY-MM-DD) local timezone
-        function getTodayString() {
-            const date = new Date();
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        }
-
-        const TODAY = getTodayString();
-
-        // --- Core Functions ---
-
-        function loadData() {
-            const saved = localStorage.getItem(STORAGE_KEY);
-            if (saved) {
-                try {
-                    appState = JSON.parse(saved);
-                } catch (e) {
-                    console.error("Failed to parse local storage data.");
-                }
-            }
-            render();
-        }
-
-        function saveData() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
-            render();
-        }
-
-        function showMessage(text) {
-            const msgBox = document.getElementById('message-box');
-            document.getElementById('message-text').innerText = text;
-            msgBox.classList.add('show');
-            setTimeout(() => {
-                msgBox.classList.remove('show');
-            }, 3000);
-        }
-
-        // --- Intent Features ---
-
-        function saveIntent() {
-            const input = document.getElementById('intent-input');
-            const text = input.value.trim();
-            if (!text) return;
-
-            appState.intent = {
-                date: TODAY,
-                text: text
-            };
-            input.value = '';
-            saveData();
-        }
-
-        function clearIntent() {
-            appState.intent = { date: '', text: '' };
-            saveData();
-        }
-
-        // --- Habit Features (Rule of Three & Partial Wins) ---
-
-        function addHabit() {
-            const input = document.getElementById('habit-input');
-            const title = input.value.trim();
-
-            if (!title) return;
-
-            // Enforce Rule of Three Constraint
-            if (appState.habits.length >= 3) {
-                showMessage("Rule of Three: Max 3 habits allowed. Graduate one to add another.");
-                return;
-            }
-
-            const newHabit = {
-                id: Date.now().toString(),
-                title: title,
-                createdAt: TODAY,
-                history: {} // Map of date string to score (0, 0.5, 1)
-            };
-
-            appState.habits.push(newHabit);
-            input.value = '';
-            saveData();
-        }
-
-        function logHabit(habitId, score) {
-            const habit = appState.habits.find(h => h.id === habitId);
-            if (habit) {
-                habit.history[TODAY] = score;
-                saveData();
-            }
-        }
-
-        function deleteHabit(habitId) {
-            // Confirming without native confirm() per instructions.
-            // For a production app, we'd use a custom modal. For this simple MVP, we just delete.
-            appState.habits = appState.habits.filter(h => h.id !== habitId);
-            saveData();
-        }
-
-        // --- Analytics (Rolling Average) ---
-
-        function calculateRollingAverage() {
-            if (appState.habits.length === 0) return 0;
-
-            let totalPossiblePoints = 0;
-            let totalEarnedPoints = 0;
-
-            const todayDate = new Date(TODAY);
-
-            appState.habits.forEach(habit => {
-                // Calculate days since habit creation (max 30 for rolling)
-                const createdDate = new Date(habit.createdAt);
-
-                // Calculate difference in days (inclusive of today)
-                const diffTime = Math.abs(todayDate - createdDate);
-                let daysActive = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-
-                // Cap at 30 days for rolling average
-                if (daysActive > 30) daysActive = 30;
-
-                totalPossiblePoints += daysActive; // 1 point per day max
-
-                // Sum up points earned in the last 30 days
-                for (let i = 0; i < daysActive; i++) {
-                    const checkDate = new Date(todayDate);
-                    checkDate.setDate(todayDate.getDate() - i);
-
-                    const year = checkDate.getFullYear();
-                    const month = String(checkDate.getMonth() + 1).padStart(2, '0');
-                    const day = String(checkDate.getDate()).padStart(2, '0');
-                    const dateString = `${year}-${month}-${day}`;
-
-                    if (habit.history[dateString] !== undefined) {
-                        totalEarnedPoints += habit.history[dateString];
-                    }
-                }
-            });
-
-            if (totalPossiblePoints === 0) return 0;
-            return Math.round((totalEarnedPoints / totalPossiblePoints) * 100);
-        }
-
-        // --- Rendering Engine ---
-
-        function render() {
-            // 1. Render Intent
-            const intentInputArea = document.getElementById('intent-input').parentNode;
-            const activeIntentArea = document.getElementById('active-intent-display');
-            const intentText = document.getElementById('intent-text');
-
-            if (appState.intent.date === TODAY && appState.intent.text !== '') {
-                intentInputArea.classList.add('hidden');
-                activeIntentArea.classList.remove('hidden');
-                intentText.innerText = appState.intent.text;
-            } else {
-                intentInputArea.classList.remove('hidden');
-                activeIntentArea.classList.add('hidden');
-            }
-
-            // 2. Render Analytics
-            const percentage = calculateRollingAverage();
-            document.getElementById('average-score').innerText = `${percentage}%`;
-            document.getElementById('average-progress-bar').style.width = `${percentage}%`;
-
-            // 3. Render Habits Count Badge
-            const countBadge = document.getElementById('habit-count-badge');
-            countBadge.innerText = `${appState.habits.length} / 3`;
-
-            // Highlight badge if maxed out
-            if (appState.habits.length === 3) {
-                countBadge.classList.remove('bg-olive');
-                countBadge.classList.add('bg-mustard');
-            } else {
-                countBadge.classList.add('bg-olive');
-                countBadge.classList.remove('bg-mustard');
-            }
-
-            // 4. Render Habits List
-            const container = document.getElementById('habits-container');
-            const emptyState = document.getElementById('empty-state');
-
-            container.innerHTML = '';
-
-            if (appState.habits.length === 0) {
-                emptyState.classList.remove('hidden');
-            } else {
-                emptyState.classList.add('hidden');
-
-                appState.habits.forEach(habit => {
-                    const todayScore = habit.history[TODAY];
-
-                    // Button styling logic based on current score
-                    const getBtnClass = (targetScore, baseColor, activeColor, textColor) => {
-                        if (todayScore === targetScore) {
-                            return `bg-${activeColor} text-white shadow-inner`;
-                        }
-                        return `bg-gray-100 text-slate hover:bg-${baseColor}/20 hover:text-navy`;
-                    };
-
-                    const card = document.createElement('div');
-                    card.className = "bg-white border border-gray-200 p-5 rounded-2xl shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group";
-
-                    card.innerHTML = `
-                        <!-- Accent line on left -->
-                        <div class="absolute left-0 top-0 bottom-0 w-1 ${todayScore !== undefined ? 'bg-olive' : 'bg-cream'}"></div>
-
-                        <div class="flex justify-between items-start mb-4 pl-2">
-                            <h3 class="text-lg font-semibold text-navy">${habit.title}</h3>
-                            <button onclick="deleteHabit('${habit.id}')" class="text-gray-300 hover:text-red-500 transition-colors" title="Delete Habit">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                            </button>
-                        </div>
-
-                        <!-- Partial Wins Button Group -->
-                        <div class="grid grid-cols-3 gap-2 pl-2">
-                            <button onclick="logHabit('${habit.id}', 0)"
-                                    class="py-2 rounded-lg text-sm font-medium transition-all ${getBtnClass(0, 'slate', 'slate', 'white')}">
-                                Skipped
-                            </button>
-                            <button onclick="logHabit('${habit.id}', 0.5)"
-                                    class="py-2 rounded-lg text-sm font-medium transition-all flex flex-col items-center justify-center ${getBtnClass(0.5, 'olive', 'olive', 'white')}">
-                                <span>Tried</span>
-                            </button>
-                            <button onclick="logHabit('${habit.id}', 1)"
-                                    class="py-2 rounded-lg text-sm font-medium transition-all ${getBtnClass(1, 'mustard', 'mustard', 'white')}">
-                                Crushed It
-                            </button>
-                        </div>
-                    `;
-                    container.appendChild(card);
-                });
-            }
-        }
-
-        // Initialize App
-        window.onload = () => {
-            loadData();
-
-            // Allow 'Enter' key to add habit
-            document.getElementById('habit-input').addEventListener('keypress', function (e) {
-                if (e.key === 'Enter') addHabit();
-            });
-
-            // Allow 'Enter' key to set intent
-            document.getElementById('intent-input').addEventListener('keypress', function (e) {
-                if (e.key === 'Enter') saveIntent();
-            });
-        };
-    </script>
 </body>
 </html>
