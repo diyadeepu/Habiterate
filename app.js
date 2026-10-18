@@ -3,12 +3,51 @@ let appState = {
     habits: []
 };
 
+// --- First-Time User Onboarding (Default Habits) ---
+function getOnboardingHabits() {
+    // We set the creation date to 5 days ago so the rolling average has some math to do!
+    const fiveDaysAgo = new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+    return [
+        {
+            id: 101,
+            title: "Drink 64oz of Water",
+            createdAt: fiveDaysAgo,
+            history: {} // User can start logging today!
+        },
+        {
+            id: 102,
+            title: "Read 10 Pages",
+            createdAt: fiveDaysAgo,
+            history: {}
+        },
+        {
+            id: 103,
+            title: "Code for 30 Minutes",
+            createdAt: fiveDaysAgo,
+            history: {}
+        }
+    ];
+}
+
 // Load data from local storage on startup
 function loadState() {
     const saved = localStorage.getItem('habiterateState');
+
     if (saved) {
+        // If they have visited before, load their saved data
         appState = JSON.parse(saved);
+
+        // Failsafe: if they deleted all habits, ensure array exists
+        if (!appState.habits) {
+            appState.habits = [];
+        }
+    } else {
+        // FIRST TIME VISIT: Populate the 3 default habits to show off the UI
+        appState.habits = getOnboardingHabits();
+        saveState(); // Save these defaults so they persist
     }
+
     renderDashboard();
 }
 
